@@ -1,0 +1,72 @@
+==================================
+REDUCERON MEMO 43
+Leaving evaluated arguments of
+primitive comparisons on the stack
+Matthew N, 30 November 2009
+==================================
+
+(This memo reconsiders a problem presented in Memo 39.)
+
+Suppose we have the following expression
+
+  case (<=) x y of { False -> e1 ; True -> e2 };
+
+where (<=) is any primitive comparison operator and e1 or e2 contain
+references to x and y.
+
+According to Memo 40, this expression would be translated to the
+expression
+
+  y swap:(<=) x [f,t] x y
+
+where f and t are defined by the following equations.
+
+  f alts x y = e1
+  t alts x y = e2
+
+When x and y are fully evaluated, say to integer literals i and j
+respectively, the top of the stack will look as follows:
+
+  i (<=) j [f,t] x y
+
+The problem is that x and y are now pointers to evaluated integers.
+We would much rather they were replaced with integer literals i and j
+driectly, because then future PRS opperunities would be much more
+likely to suceed.
+
+Possible solution
+-----------------
+
+Let us redefine the built-in rewrite rules for primitive comparisons.
+Instead of:
+
+  i (<=) j --> True, if i <= j
+
+  i (<=) j --> False, if i > j
+
+Let us have:
+
+  i (<=) j alts x y --> True alts i j, if i <= j
+
+  i (<=) j alts x y --> False alts i j, if i > j
+
+In other words, the evaluated arguments are left on the stack.
+
+The attraction of this technique is that the case alternatives can see
+the fully evaluated values of x and y, without paying any cost to do
+so.
+
+Closing thoughts
+----------------
+
+This technique should prove quite effective.  However, it has its
+limitations.  Suppose we have the expression
+
+  case (<=) ((+) x y) z of {
+    False -> e1;
+    True -> e2;
+  };
+
+where e1 and e2 refer to x and y.  The problem remains that the
+evaluated values of x and y are not directly visible to the case
+alternatives.

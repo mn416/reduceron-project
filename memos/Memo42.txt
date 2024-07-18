@@ -1,0 +1,27 @@
+===========================
+REDUCERON MEMO 42
+Dynamic sharing analysis
+Matthew N, 27 November 2009
+===========================
+
+DEFINITION (Applications and atoms).  An application is a sequence of
+atoms.  An atom is either a function symbol or a pointer to an
+application.
+
+DEFINITION (Graph).  The graph is a collection C of applications, of
+which exactly one (the "spine application") is not pointed-to by any
+pointer in any application in C.
+
+DEFINITION (Unique pointer).  A unique pointer points to an
+application that is not pointed-to by any other pointer in the graph.
+Many applications may contain a pointer to an application containing a
+unique pointer.
+
+COROLLARY. A unique pointer appearing in the spine application points
+to an application that is not reachable from any other pointer in the
+graph.
+
+DEFINITION (Dashed and undashed pointers).  A pointer is either dashed
+or undashed.
+
+INVARIANT. Every dashed pointer is a unique pointer.

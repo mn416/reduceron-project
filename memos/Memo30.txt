@@ -1,0 +1,67 @@
+==========================================
+REDUCERON MEMO 30
+Reduceron performance, just before ICFP'09
+Matthew N, 20 August 2009
+==========================================
+
+This memo gives performance figures of the Reduceron implementation as
+of 20 August 2009.  These measurements were made somewhat hurriedly at
+the weekend before heading off to ICFP in Edinburgh, and are
+incomplete.
+
+Measurements
+------------
+
++----------+----------+----------+-------+-----+
+| PROGRAM  |    TICKS | SPEED-UP | %PRIM | %GC |
++----------+----------+----------+-------+-----+
+| PermSort | 18088129 |      2.9 |    10 |   1 |
+| SumPuz   | 33373188 |      4.6 |    23 |   2 |
+| Adjoxo   | 61787186 |      4.0 |    26 |   1 |
+| While    | 48629018 |      3.8 |    18 |   1 |
+| MSS      | 29366332 |      6.3 |    47 |   2 |
+| OrdList  | 32648739 |      5.3 |     0 |   1 |
+| Queens   | 50913145 |      2.8 |    33 |   5 |
++----------+----------+----------+-------+-----+
+| AVERAGE  |          |      4.1 |    22 |   2 |
++----------+----------+----------+-------------+
+
+(A SPEED-UP of N means the new Reduceron takes N times fewer 
+clock ticks than the PhD Reduceron.)
+
+Notes
+-----
+
+Average %PRIM for PhD Reduceron is 6.
+
+Average %GC for PhD Reduceron is 11.  Remember the new Reduceron is
+spineless, surely reducing the number of GC invocations considerably.
+Also heap size is now about 4x bigger than before.
+
+Maximum function arity is 7 and maximum constructor arity is 6.
+
+Possible improvements
+---------------------
+
+Speculative evaluation of primitive redexes is obviously looking very
+worthwhile now.  Eliminating the 22 %PRIM would be nice, but also
+consider the reduction in heap pressure.
+
+Increasing the number of applications instantiated per cycle from 2 to
+3 would help, but I'm not sure if it's worth the effort.  At least
+this should be measured using the emulator, if not implemented on
+FPGA.
+
+Further measurements
+--------------------
+
++-----------+-----------+----------+-------+-----+
+| PROGRAM   |     TICKS | SPEED-UP | %PRIM | %GC |
++-----------+-----------+----------+-------+-----+
+| Mate      | 932143950 |      4.4 |    18 |   8 |
+| Taut      |  14153017 |      3.6 |     9 |   1 |
+| Queens2   |  27552355 |      4.0 |     1 |   1 |
+| Circhelli |  54871776 |      8.1 |    29 |   6 |
++-----------+-----------+----------+-------+-----+
+
+There are still a few benchmarks that I haven't tried yet.

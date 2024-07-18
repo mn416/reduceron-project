@@ -1,0 +1,131 @@
+=================================================
+REDUCERON MEMO 29
+The Reduceron Card -- accelerated graph reduction
+Colin Runciman, 26 August 2009
+=================================================
+
+This memo will be a short Flight of Fancy setting out some ambitious
+but desirable goals for a possible further 1-year Reduceron project in
+2010.  As the title suggests, the key idea, already hinted at in the
+original Reduceron proposal, is a card that can be plugged into a
+desk-top PC enabling faster execution of some applications using a
+functional language.
+
+Usual caveats about raw (or at best half-baked) status.
+
+Accelerated graph reduction?
+----------------------------
+
+By accelerated reduction I simply mean reduction at an increased rate.
+But what is the "reduction rate" for a functional program?
+
+Assume that programs are written in (or translated to) a core language
+something like flite.  Assume also that all applications of
+non-recursive functions are in-lined at compile-time.  Now count as
+reductions all primitive evaluations, contractions of defined function
+applications and case distinctions during execution under the obvious
+plain rules of evaluation.  The reduction rate for a program under
+some implementation is the number of reductions per second -- even if
+some of those "reductions" are actually optimised away by compile-time
+techniques.
+
+I don't know what the current reduction rate is for ghc on a desk-top
+PC.  I'd like to find out.  But of this I am pretty sure: the
+ghc-on-PC reduction rate is only a small fraction of the clock-rate
+for the PC.
+
+One attractive goal for an "accelerated" implementation would be to
+achieve at least 1 GHz reduction rate -- using an "accelerator"
+clocked at 1 GHz!  I doubt that ghc achieves anywhere near a 1 GHz
+reduction rate, so the "accelerated" tag would be justified.
+
+Reduceron Card?
+---------------
+
+So what would a Reduceron Card for accelerated graph reduction be like?
+
+From a user's point of view, it would be conceptually like a GPU card.
+It slots into their PC and makes certain kinds of application go
+faster, assuming that they are programmed to exploit it.  (I say
+"slots into", but the nature of the physical connection is not that
+important -- so long as transfer rates are sufficient.)
+
+From an application builder's point of view, a software library
+supports the transfer of computational tasks and results to and from
+the Reduceron card.  These transfers could take different forms. Here
+are some possibilities, with increasing scope of application.
+
+(1)  Task: self-contained Reduceron code in binary form.
+     Result: a value written into a (small) memory buffer.
+
+     This is similar to the current experimental set-up
+     using the FPGA board.
+
+(2a) Task: Reduceron code in binary form to be executed with
+     reference to a Reduceron-format heap in PC memory.
+     Result: update of the PC-heap.
+
+     There are different possible approaches to the timing and
+     extent of value-transfers between the PC-heap and a
+     Reduceron-heap.  The simplest might be a complete
+     transfer of the reachable heap before and after the
+     Reduceron computation -- heap sizes permitting.
+
+(2b) Task: Reduceron code in binary form but extended to include
+     character I/O streams.
+     Result: received via output stream(s).
+
+     Again there are different possible approaches to the
+     transfer of stream values.  Complete stream transfers
+     would be inappropriate, but transfers in large buffer-fulls
+     would be one option.
+
+(3)  Combination of 2a and 2b.
+
+Matthew's response
+------------------
+
+The main concern I have about the "Reduceron Card" project is that the
+work could be more organisational than technical in nature - and where
+technical, it could be more "electrical" than "computational".  It
+would involve contacting various ASIC companies and communicating to
+them our requirements.  There would be a lot to learn about ASICs, and
+that prospect doesn't really excite me!
+
+However, I do feel that there is more to explore w.r.t combining
+functional programming and FPGAs.  The problems as I see them are:
+
+  FPGAs offer great parallelism, but can only be exploited by a select
+  few "experts" using low-level abstractions.
+
+  Compiling parallel programs to efficient code is difficult.  I think
+  this is partly because the architectures of modern PCs are
+  very complex and unpredictable.
+
+So an exiting avenue for future work is to explore compiling a
+*parallel* functional language to FPGA.  The language I have in mind
+is a "nested data parallel" one - something like Data Parallel Haskell
+or NESL.
+
+The idea of data parallelism is to apply a single operation across a
+collection of items in parallel.  In nested data parallelism the
+single operation may itself be an operation which is applied in
+parallel, and so on.  Apparently, nested data parallelism can capture
+a wide range of parallel algorithms, and programs are typically short
+and concise.
+
+FPGAs are inherently data parallel with their parallel memories and
+parallel processing abilities at both fine and coarse-grained levels.
+But it is only my suspicion that data parallel programs would compile
+down quite nicely to FPGAs - it would obviosuly require more
+investigation.
+
+A lot of work appears to have been done on the "front-end" of
+compiling data parallel programs (the flattening transformation -
+converting nested to flat data parallelism - and so on).  However,
+Peyton Jones points out that there is no efficient "back-end"
+implementation of it yet and that this is a "huge oppertunity".  NESL
+programs for example are simulated by an interpreter.  So, the
+challenge is an open one.
+
+As for the details of what such a project would involve, I don't know!
